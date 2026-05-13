@@ -1,6 +1,6 @@
 # Ubuntu 部署说明
 
-默认部署整个仓库到 `/opt/swp-rag/current`，新项目目录为 `/opt/swp-rag/current/langchain-rag`，服务端口为 `8010`。
+默认部署整个仓库到 `/opt/swp-rag-workbench/current`，新项目目录为 `/opt/swp-rag-workbench/current/langchain-rag`，服务端口为 `8010`。
 
 ## 1. 安装系统依赖
 
@@ -18,24 +18,24 @@ python3 --version
 ## 2. 拉取代码
 
 ```bash
-sudo mkdir -p /opt/swp-rag/current
-sudo chown -R "$USER:$USER" /opt/swp-rag
+sudo mkdir -p /opt/swp-rag-workbench/current
+sudo chown -R "$USER:$USER" /opt/swp-rag-workbench
 
-git clone <你的仓库地址> /opt/swp-rag/current
-cd /opt/swp-rag/current/langchain-rag
+git clone <你的仓库地址> /opt/swp-rag-workbench/current
+cd /opt/swp-rag-workbench/current/langchain-rag
 ```
 
 如果已经上传了代码，只需要进入目录：
 
 ```bash
-cd /opt/swp-rag/current/langchain-rag
+cd /opt/swp-rag-workbench/current/langchain-rag
 ```
 
 ## 3. 创建虚拟环境
 
 ```bash
-python3 -m venv /opt/swp-rag/venv-langchain-rag
-source /opt/swp-rag/venv-langchain-rag/bin/activate
+python3 -m venv /opt/swp-rag-workbench/venv-langchain-rag
+source /opt/swp-rag-workbench/venv-langchain-rag/bin/activate
 python -m pip install --upgrade pip setuptools wheel
 pip install -e .
 ```
@@ -83,8 +83,8 @@ UPLOAD_DIR=./data/uploads
 ## 5. 手动启动验证
 
 ```bash
-cd /opt/swp-rag/current/langchain-rag
-source /opt/swp-rag/venv-langchain-rag/bin/activate
+cd /opt/swp-rag-workbench/current/langchain-rag
+source /opt/swp-rag-workbench/venv-langchain-rag/bin/activate
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8010
 ```
 
@@ -112,10 +112,10 @@ After=network.target
 
 [Service]
 User=ubuntu
-WorkingDirectory=/opt/swp-rag/current/langchain-rag
+WorkingDirectory=/opt/swp-rag-workbench/current/langchain-rag
 EnvironmentFile=/opt/swp-rag-workbench/env/backend.env
 Environment=RERANKER_MODEL_PATH=/opt/swp-models/bge-reranker-v2-m3
-ExecStart=/opt/swp-rag/venv-langchain-rag/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8010
+ExecStart=/opt/swp-rag-workbench/venv-langchain-rag/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8010
 Restart=always
 RestartSec=5
 
@@ -182,10 +182,10 @@ curl http://127.0.0.1/api/health
 ## 8. 日常更新
 
 ```bash
-cd /opt/swp-rag/current
+cd /opt/swp-rag-workbench/current
 git pull
 cd langchain-rag
-source /opt/swp-rag/venv-langchain-rag/bin/activate
+source /opt/swp-rag-workbench/venv-langchain-rag/bin/activate
 pip install -e .
 sudo systemctl restart langchain-rag
 journalctl -u langchain-rag -n 100 --no-pager
@@ -208,14 +208,14 @@ sudo systemctl status langchain-rag
 直接跑前台看错误：
 
 ```bash
-cd /opt/swp-rag/current/langchain-rag
-source /opt/swp-rag/venv-langchain-rag/bin/activate
+cd /opt/swp-rag-workbench/current/langchain-rag
+source /opt/swp-rag-workbench/venv-langchain-rag/bin/activate
 python -m uvicorn app.main:app --host 0.0.0.0 --port 8010
 ```
 
 清空本地烟测向量数据：
 
 ```bash
-cd /opt/swp-rag/current/langchain-rag
+cd /opt/swp-rag-workbench/current/langchain-rag
 rm -f data/vectorstore.json
 ```
